@@ -12,7 +12,6 @@ if (list.exists) {
 
     var layers = getAllArtLayers(app.activeDocument);
     for (var x = 0; x < layers.length && labels.length > 0; x++) {
-      layers[x].name = labels.pop();
+        setLayerName(layers[x], labels.pop());
     } 
 }
-

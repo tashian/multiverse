@@ -1,4 +1,6 @@
-
+//
+// Randomness-related stuff
+//
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -7,21 +9,6 @@ function getRandomInt(min, max) {
 
 function getRandomBool() {
   return Boolean(Math.floor(Math.random() * 2));
-}
-
-// Dig into the layer sets...
-function getAllArtLayers(doc) {
-  var allLayers = [];
-  for (var x = 0; x < doc.artLayers.length; x++) {
-      allLayers.push(doc.artLayers[x]);
-  }
-  for (var x = 0; x < doc.layerSets.length; x++) {
-      var layers = doc.layerSets[x].layers;
-      for (var y = 0; y < layers.length; y++) {
-          allLayers.push(layers[y]);
-      }
-  }
-  return allLayers;
 }
 
 /**
@@ -37,6 +24,34 @@ function shuffleArray(a) {
         a[j] = x;
     }
     return a;
+}
+
+//
+// Photoshop-related stuff
+//
+
+// Dig into the layer sets to get all layers, including art layers that
+// aren't in document.artLayers.
+function getAllArtLayers(doc) {
+  var allLayers = [];
+  for (var x = 0; x < doc.artLayers.length; x++) {
+      allLayers.push(doc.artLayers[x]);
+  }
+  for (var x = 0; x < doc.layerSets.length; x++) {
+      var layers = doc.layerSets[x].layers;
+      for (var y = 0; y < layers.length; y++) {
+          allLayers.push(layers[y]);
+      }
+  }
+  return allLayers;
+}
+
+// Changing a layer's name makes it visible, so we have to save & restore
+// the visibility
+function setLayerName(layer, name) {
+    var visible = layer.visible;
+    layer.name = name;
+    layer.visible = visible;
 }
 
 // LayerSets.getByName displays an error if not found;

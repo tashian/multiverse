@@ -1,6 +1,7 @@
 #include "common.jsxinc"
-var STEPS_PER_REFRESH = 4;
+var STEPS_PER_REFRESH = 3;
 var FULL_OPACITY_PROBABILITY = 0.1;
+var SLEEP_PER_REFRESH = 0;
 
 // looping forever,
 // - toggle visibility on a random art layer
@@ -19,11 +20,14 @@ function forever(layers) {
       if (layer.visible) {
         if (Math.random() < 0.1) {
           layer.opacity = 100;
+        } else if (Math.random() < 0.1) {
+          layer.opacity = 0;
         } else {
           layer.opacity = getRandomInt(1, 100);
         }
       }
       if (step % STEPS_PER_REFRESH == 0) {
+          $.sleep(SLEEP_PER_REFRESH);
           refresh();
       }
     }
