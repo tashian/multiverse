@@ -1,4 +1,3 @@
-// sort the layers by name
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
