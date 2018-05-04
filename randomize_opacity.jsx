@@ -1,12 +1,6 @@
+#include "common.jsxinc"
 MIN_OPACITY = 0
 MAX_OPACITY = 100
-
-// sort the layers by name
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
 
 function randomizeOpacity(layers) {
   for (var x = 0; x < layers.length; x++) {

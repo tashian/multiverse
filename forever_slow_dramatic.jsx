@@ -1,5 +1,11 @@
 #include "common.jsxinc"
 
+// this one is slow to run but when changes occur they are more dramatic
+
+// go through all layers and layer sets and
+// randomly toggle visibility and adjust opacity.
+// refresh after each pass through all layers.
+
 function randomlyToggleLayers(layers) {
   for (var x = 0; x < layers.length; x++) {
     if (!layers[x].allLocked) {

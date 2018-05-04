@@ -4,3 +4,47 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
+
+function getRandomBool() {
+  return Boolean(Math.floor(Math.random() * 2));
+}
+
+// Dig into the layer sets...
+function getAllArtLayers(doc) {
+  var allLayers = [];
+  for (var x = 0; x < doc.artLayers.length; x++) {
+      allLayers.push(doc.artLayers[x]);
+  }
+  for (var x = 0; x < doc.layerSets.length; x++) {
+      var layers = doc.layerSets[x].layers;
+      for (var y = 0; y < layers.length; y++) {
+          allLayers.push(layers[y]);
+      }
+  }
+  return allLayers;
+}
+
+/**
+ * Shuffles array in place.
+ * @param {Array} a items An array containing the items.
+ */
+function shuffleArray(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+// LayerSets.getByName displays an error if not found;
+// this returns silently.
+function getLayerSetByName(doc, name) {
+  for (x = 0; x < doc.layerSets.length; x++) {
+    if (doc.layerSets[x].name == name) {
+        return doc.layerSets[x];
+    }
+  }
+}
