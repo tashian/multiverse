@@ -21,7 +21,7 @@ function forever(layers) {
           if (Math.random() < 0.2) {
               show_me.opacity = 100;
           } else {
-              opacityGoals[show_me.name] = newOpacityGoal(0, getRandomInt(60, 95));
+              opacityGoals[show_me.name] = newOpacityGoal(0, getNonUniformRandomOpacity());
               opacity_layers.push(show_me);
           }
       }
@@ -53,13 +53,21 @@ function forever(layers) {
 }
 
 function candidateForHiding(layers) {
-    for (var i = layers.length - 1; i >= 0; i--) {
+    var slice_idx = Math.floor((layers.length-1) * 0.6);
+    var layers = getShuffledLayers(layers, slice_idx, layers.length);
+    var i = layers.length;
+    while (i--) {
         var layer = layers[i];
-        if (layer.visible && !layer.allLocked && !layer.isBackgroundLayer &&
-            layer.opacity <= 20) {
+        if (layer.visible && !layer.allLocked && !layer.isBackgroundLayer) {
             return layer;
         }
     }
+}
+
+function getShuffledLayers(layers, start, end) {
+    var shuffledLayers = [];
+    while (end-- > start) shuffledLayers.push(layers[end]);
+    return shuffleArray(shuffledLayers);
 }
 
 function candidateForShowing(layers) {

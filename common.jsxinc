@@ -7,17 +7,14 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-// Broken, WIP
-function getNonUniformRandom() {
-    // from 0-1, non-uniform
-    // y= e^((x-0.5)^2) +0.25
-    return Math.exp(Math.pow(Math.random() - 0.5, 2)) - 0.25;
-}
-
-function getNonUniformRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(getNonUniformRandom() * (max - min)) + min;
+function getNonUniformRandomOpacity(min, max) {
+    if (Math.random() < 0.25) {
+        return 100;
+    } else if (Math.random() < 0.25) {
+        return getRandomInt(1, 20);
+    } else {
+        return getRandomInt(60, 100);
+    }
 }
 
 function getRandomOpacity() {
@@ -100,8 +97,7 @@ function sigmoid(start, end, steps) {
 }
 
 if (typeof exports !== 'undefined') {
-    exports.getNonUniformRandom = getNonUniformRandom;
-    exports.getNonUniformRandomInt = getNonUniformRandomInt;
+    exports.getNonUniformRandomOpacity = getNonUniformRandomOpacity;
     exports.getRandomOpacity = getRandomOpacity;
     exports.sigmoid = sigmoid;
 }
