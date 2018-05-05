@@ -7,6 +7,23 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+// Broken, WIP
+function getNonUniformRandom() {
+    // from 0-1, non-uniform
+    // y= e^((x-0.5)^2) +0.25
+    return Math.exp(Math.pow(Math.random() - 0.5, 2)) - 0.25;
+}
+
+function getNonUniformRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(getNonUniformRandom() * (max - min)) + min;
+}
+
+function getRandomOpacity() {
+  return getRandomInt(1, 100);
+}
+
 function getRandomBool() {
   return Boolean(Math.floor(Math.random() * 2));
 }
@@ -26,6 +43,7 @@ function shuffleArray(a) {
     return a;
 }
 
+
 //
 // Photoshop-related stuff
 //
@@ -33,17 +51,22 @@ function shuffleArray(a) {
 // Dig into the layer sets to get all layers, including art layers that
 // aren't in document.artLayers.
 function getAllArtLayers(doc) {
-  var allLayers = [];
-  for (var x = 0; x < doc.artLayers.length; x++) {
-      allLayers.push(doc.artLayers[x]);
-  }
-  for (var x = 0; x < doc.layerSets.length; x++) {
-      var layers = doc.layerSets[x].layers;
-      for (var y = 0; y < layers.length; y++) {
-          allLayers.push(layers[y]);
-      }
-  }
-  return allLayers;
+    var allLayers = [];
+    var allLayers = collectAllLayers(doc, allLayers);
+
+    function collectAllLayers (doc, allLayers) {
+        for (var m = 0; m < doc.layers.length; m++) {
+            var theLayer = doc.layers[m];
+            if (theLayer.typename === "ArtLayer") {
+                allLayers.push(theLayer);
+            } else {
+                collectAllLayers(theLayer, allLayers);
+            }
+        }
+        return allLayers;
+    }
+
+    return collectAllLayers(doc, allLayers);
 }
 
 // Changing a layer's name makes it visible, so we have to save & restore
@@ -62,4 +85,23 @@ function getLayerSetByName(doc, name) {
         return doc.layerSets[x];
     }
   }
+}
+
+// Take a step toward a value, along
+// a logistic curve. See https://www.desmos.com/calculator/21xlvhwkhf
+function sigmoid(start, end, steps) {
+    var currentStep = 0;
+    return function() {
+        var x = currentStep++;
+        if (x == 0) { return start; }
+        if (x >= steps) { return end; }
+        return Math.round(((end-start)/(1 + Math.exp(-(x-(steps/2))))) + start);
+    }
+}
+
+if (typeof exports !== 'undefined') {
+    exports.getNonUniformRandom = getNonUniformRandom;
+    exports.getNonUniformRandomInt = getNonUniformRandomInt;
+    exports.getRandomOpacity = getRandomOpacity;
+    exports.sigmoid = sigmoid;
 }
