@@ -1,0 +1,15 @@
+{
+	baseUrl: "src",
+	paths: {
+		requireLib: "../node_modules/requirejs/require",
+		underscore: "../node_modules/underscore/underscore",
+        common: "../lib/common",
+	},
+	shim: {
+		underscore: {
+			exports: "_"
+		}
+	},
+	include: [ "requireLib" ],
+	optimize: "none"
+}

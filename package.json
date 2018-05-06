@@ -1,0 +1,20 @@
+{
+  "name": "7x7",
+  "version": "1.0.0",
+  "description": "A generative art project",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "chai": "^4.1.2",
+    "jshint": "^2.9.5",
+    "requirejs": "^2.3.5",
+    "underscore": "^1.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "Carl Tashian",
+  "license": "MIT"
+}
