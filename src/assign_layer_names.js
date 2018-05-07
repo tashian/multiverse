@@ -20,7 +20,7 @@ function(
             while (!list.eof) {
                 labels.push(list.readln());
             }
-            labels = shuffleArray(labels);
+            labels = _.shuffle(labels);
 
             var layers = getAllArtLayers(app.activeDocument);
             for (var x = 0; x < layers.length && labels.length > 0; x++) {

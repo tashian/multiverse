@@ -11,7 +11,6 @@ function(
     _,
     common
 ) {
-
     var CONCURRENT_ACTIONS = 5,
         OPACITY_STEPS = 6,
         TOP_PCT_OF_LAYERS_TO_VARY_OPACITY = 30;
@@ -48,15 +47,15 @@ function(
           }
 
           forEachLayer(opacityLayers, function(layer) {
-              if (!(layer.name in opacityGoals)) {
-                  opacityGoals[layer.name] = newRandomOpacityGoal(layer.opacity);
+              if (!(layer.id in opacityGoals)) {
+                  opacityGoals[layer.id] = newRandomOpacityGoal(layer.opacity);
               }
           });
 
           for (var i = 0; i < OPACITY_STEPS; i++) {
               forEachLayer(opacityLayers, function(layer) {
-                  if (layer.name in opacityGoals) {
-                     layer.opacity = opacityGoals[layer.name].next();
+                  if (layer.id in opacityGoals) {
+                     layer.opacity = opacityGoals[layer.id].next();
                   }
               });
               refresh();
@@ -65,30 +64,16 @@ function(
     }
 
     function candidateForHiding(layers) {
-        var slice_idx = Math.floor((layers.length-1) * 0.6),
-            i = layers.length,
-            layer;
-        layers = getShuffledLayers(layers, slice_idx, i);
-        return _.findWhere(layers, {visible: true, allLocked: false, isBackgroundLayer: false});
-        // forEachLayer(layers, function() {
-        //     if (layer.visible && !layer.allLocked && !layer.isBackgroundLayer) {
-        //         return layer;
-        //     }
-        // });
-    }
-
-    function getShuffledLayers(layers, start, end) {
-        var shuffledLayers = [];
-        while (end-- > start) shuffledLayers.push(layers[end]);
-        return _.shuffle(shuffledLayers);
+        return _.chain(layers)
+            .rest(Math.floor((layers.length-1) * 0.6))
+            .where({visible: true, allLocked: false, isBackgroundLayer: false})
+            .sample()
+            .value();
     }
 
     function candidateForShowing(layers) {
-        forEachLayer(layers, function(layer) {
-            if (!layer.visible && !layer.allLocked && !layer.isBackgroundLayer) {
-                return layer;
-            }
-        });
+        return _.findWhere(layers,
+            {visible: false, allLocked: false, isBackgroundLayer: false});
     }
 
     function nVisibleLayers(layers, n) {

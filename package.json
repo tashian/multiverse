@@ -11,9 +11,9 @@
     "requirejs": "^2.3.5",
     "underscore": "^1.9.0"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "build": "./build.sh"
   },
   "author": "Carl Tashian",
   "license": "MIT"

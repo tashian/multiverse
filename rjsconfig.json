@@ -10,6 +10,6 @@
 			exports: "_"
 		}
 	},
-	include: [ "requireLib" ],
+    include: [ "requireLib" ],
 	optimize: "none"
 }
