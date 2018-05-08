@@ -76,11 +76,11 @@ function(
             },
 
             fadeToRandomOpacity: function(fromOpacity) {
-                return this.fade(fromOpacity, utils.getRandomInt(1, 100));
+                return this.fade(fromOpacity, utils.getRandomInt(5, 100));
             },
 
             fadeToNonUniformRandomOpacity: function(fromOpacity) {
-                return this.fade(fromOpacity, utils.getNonUniformRandom(1, 100));
+                return this.fade(fromOpacity, utils.getNonUniformRandom(5, 100));
             }
         };
 
