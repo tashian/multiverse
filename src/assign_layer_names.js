@@ -9,7 +9,7 @@ require([
 ],
 function(
     _,
-    common
+    utils
 ) {
     function main() {
         var list = File.openDialog("Select a text file", function(f) { return true; }, false);
@@ -22,9 +22,9 @@ function(
             }
             labels = _.shuffle(labels);
 
-            var layers = getAllArtLayers(app.activeDocument);
+            var layers = utils.getAllArtLayers(app.activeDocument);
             for (var x = 0; x < layers.length && labels.length > 0; x++) {
-                setLayerName(layers[x], labels.pop());
+                utils.setLayerName(layers[x], labels.pop());
             } 
         }
     }

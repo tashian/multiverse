@@ -8,7 +8,7 @@ require([
 ],
 function(
     _,
-    common
+    utils
 ) {
     var OPACITY_TWEAK_PCT = 10;
 
@@ -23,9 +23,9 @@ function(
 
           if (!layer.allLocked && !layer.isBackgroundLayer && layer.visible) {
             if (Math.random() < 0.5) {
-              layer.opacity = Math.min(layer.opacity + getRandomInt(1, OPACITY_TWEAK_PCT), 100);
+              layer.opacity = Math.min(layer.opacity + utils.getRandomInt(1, OPACITY_TWEAK_PCT), 100);
             } else {
-              layer.opacity = Math.max(layer.opacity - getRandomInt(1, OPACITY_TWEAK_PCT), 1);
+              layer.opacity = Math.max(layer.opacity - utils.getRandomInt(1, OPACITY_TWEAK_PCT), 1);
             }
           }
         }
@@ -33,5 +33,5 @@ function(
       }
     }
 
-    return forever(getAllArtLayers(app.activeDocument));
+    return forever(utils.getAllArtLayers(app.activeDocument));
 });

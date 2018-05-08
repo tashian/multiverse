@@ -8,7 +8,7 @@ require([
 ],
 function(
     _,
-    common
+    utils
 ) {
     // applyMotionBlur(angle [-360..360], radius [1..999])
     var BLUR_PROBABILITY = 0.5;
@@ -20,8 +20,8 @@ function(
         if (!layers[x].allLocked && layers[x].visible &&
           Math.random() < BLUR_PROBABILITY) {
           layers[x].applyMotionBlur(
-            getRandomInt(0, 360),
-            getRandomInt(MIN_RADIUS, MAX_RADIUS)
+            utils.getRandomInt(0, 360),
+            utils.getRandomInt(MIN_RADIUS, MAX_RADIUS)
           );
         }
       }

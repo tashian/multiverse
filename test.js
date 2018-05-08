@@ -1,13 +1,8 @@
+var requirejs = require('requirejs');
 var expect = require('chai').expect;
-var common = require('./Scripts/common.jsxinc');
+var common = requirejs('./lib/common.js');
 
-expect(common.getRandomOpacity()).to.be.at.least(1);
-expect(common.getRandomOpacity()).to.be.at.most(100);
-
-var s = common.sigmoid(10, 20, 4);
-expect(s()).to.equal(10);
-expect(s()).to.equal(13);
-expect(s()).to.equal(15);
-expect(s()).to.equal(17);
-expect(s()).to.equal(20);
+var s = common.sigmoid(10, 20, 8);
+console.log(s);
+expect(s).to.equal([10, 13, 15, 17, 20]);
 

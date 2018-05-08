@@ -9,14 +9,14 @@ require([
 ],
 function(
     _,
-    common
+    utils
 ) {
     var CONCURRENT_ACTIONS = 5,
         OPACITY_STEPS = 6,
         TOP_PCT_OF_LAYERS_TO_VARY_OPACITY = 30;
 
     function forever(layers) {
-      var remix = getLayerSetByName(app.activeDocument, "remix");
+      var remix = utils.getLayerSetByName(app.activeDocument, "remix");
 
       while (1) {
           // opacity actions
@@ -34,7 +34,7 @@ function(
               if (Math.random() < 0.2) {
                   showMe.opacity = 100;
               } else {
-                  opacityGoals[showMe.name] = newOpacityGoal(0, getNonUniformRandomOpacity());
+                  opacityGoals[showMe.name] = newOpacityGoal(0, utils.getNonUniformRandom(1, 100));
                   opacityLayers.push(showMe);
               }
           }
@@ -46,14 +46,14 @@ function(
               hideMe.move(remix.layers[0], ElementPlacement.PLACEBEFORE);
           }
 
-          forEachLayer(opacityLayers, function(layer) {
+          _.each(opacityLayers, function(layer) {
               if (!(layer.id in opacityGoals)) {
                   opacityGoals[layer.id] = newRandomOpacityGoal(layer.opacity);
               }
           });
 
           for (var i = 0; i < OPACITY_STEPS; i++) {
-              forEachLayer(opacityLayers, function(layer) {
+              _.each(opacityLayers, function(layer) {
                   if (layer.id in opacityGoals) {
                      layer.opacity = opacityGoals[layer.id].next();
                   }
@@ -86,7 +86,7 @@ function(
             layer;
         // TODO: What if there aren't n visible layers?
         while (layerlist.length < n) {
-            i = getRandomInt(0, max_layer_idx);
+            i = utils.getRandomInt(0, max_layer_idx);
             layer = layers[i];
             if (!layer.allLocked && !layer.isBackgroundLayer && layer.visible) {
                 layerlist.push(layer);
@@ -95,6 +95,16 @@ function(
         return layerlist;
     }
 
+    // Deprecated variant of sigmoid function
+    function sigmoid(start, end, steps) {
+        var currentStep = 0, x;
+        return function() {
+            x = currentStep++;
+            if (x == 0) { return start; }
+            if (x >= steps) { return end; }
+            return Math.round(((end-start)/(1 + Math.exp(-(x-(steps/2))))) + start);
+         }
+    }
 
     function newOpacityGoal(currentOpacity, target) {
         return {
@@ -104,8 +114,8 @@ function(
     }
 
     function newRandomOpacityGoal(currentOpacity) {
-        return newOpacityGoal(currentOpacity, getRandomOpacity());
+        return newOpacityGoal(currentOpacity, utils.getRandomInt(5, 100));
     }
 
-    return forever(getAllArtLayers(app.activeDocument));
+    return forever(utils.getAllArtLayers(app.activeDocument));
 });

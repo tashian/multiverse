@@ -8,13 +8,13 @@ require([
 ],
 function(
     _,
-    common
+    utils
 ) {
     function shuffleUnlockedLayers(layers) {
       for (var x = 0; x < layers.length; x++) {
           if (!layers[x].allLocked) {
-              layers[x].move(layers[getRandomInt(0, layers.length)],
-                ElementPlacement.PLACEAFTER)
+              layers[x].move(layers[utils.getRandomInt(0, layers.length)],
+                ElementPlacement.PLACEAFTER);
         }
       }
     }

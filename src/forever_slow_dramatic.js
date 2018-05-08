@@ -8,7 +8,7 @@ require([
     "underscore"
 ],
 function(
-    common,
+    utils,
     _
 ) {
 
@@ -29,7 +29,7 @@ function(
     function randomizeOpacity(layers) {
       for (var x = 0; x < layers.length; x++) {
         if (!layers[x].allLocked && layers[x].visible) {
-          layers[x].opacity = getRandomInt(0, 100);
+          layers[x].opacity = utils.getRandomInt(0, 100);
         }
       }
     }

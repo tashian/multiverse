@@ -14,9 +14,4 @@ do
 		-o rjsconfig.json \
 		name=$barename \
 		out=$out/$barename.jsx
-
-    # Add #target, for use by fakestk
-    sed -i.bak '1s/^/#target photoshop-19.1\
-/' "$out/$barename.jsx"
 done
-rm $out/*.bak
