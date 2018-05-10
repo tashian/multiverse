@@ -5,7 +5,7 @@
 */
 require([
     "underscore",
-    "common"
+    "utils"
 ],
 function(
     _,
@@ -103,7 +103,7 @@ function(
             if (x == 0) { return start; }
             if (x >= steps) { return end; }
             return Math.round(((end-start)/(1 + Math.exp(-(x-(steps/2))))) + start);
-         }
+         };
     }
 
     function newOpacityGoal(currentOpacity, target) {

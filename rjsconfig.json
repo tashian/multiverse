@@ -3,12 +3,10 @@
 	paths: {
 		requireLib: "../node_modules/requirejs/require",
 		underscore: "../node_modules/underscore/underscore",
-        common: "../lib/common",
-	},
-	shim: {
-		underscore: {
-			exports: "_"
-		}
+        utils: "../lib/utils",
+        machine: "../lib/machine",
+        polling_timer: "../lib/polling_timer",
+        fx_queue: "../lib/fx_queue"
 	},
     include: [ "requireLib" ],
 	optimize: "none"

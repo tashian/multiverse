@@ -4,11 +4,11 @@
 */
 require([
     "underscore",
-    "common"
+    "utils"
 ],
 function(
     _,
-    common
+    utils 
 ) {
     function randomlyToggleLayers(layers) {
       for (var x = 0; x < layers.length; x++) {

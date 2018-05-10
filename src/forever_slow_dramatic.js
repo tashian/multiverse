@@ -4,7 +4,7 @@
     refresh
 */
 require([
-    "common",
+    "utils",
     "underscore"
 ],
 function(

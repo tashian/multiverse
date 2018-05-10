@@ -5,7 +5,7 @@
 */
 require([
     "underscore",
-    "common"
+    "utils"
 ],
 function(
     _,
