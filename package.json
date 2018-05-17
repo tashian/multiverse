@@ -1,7 +1,7 @@
 {
-  "name": "7x7",
+  "name": "generative",
   "version": "1.0.0",
-  "description": "A generative art project",
+  "description": "Generative art scripts for Photoshop CC",
   "directories": {
     "lib": "lib"
   },
@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test": "node test.js",
+    "lint": "./lint.sh",
     "build": "./build.sh"
   },
   "author": "Carl Tashian",

@@ -17,7 +17,8 @@ function(
     PollingTimer,
     Machine
 ) {
-    var fx_queue = new FxQueue();
+    var fx_queue = new FxQueue(),
+        FAST_MODE = true;
 
     function surfaceOneLayer(layerSet, style) {
         var layer = sample(layerSet.layers);
@@ -64,7 +65,11 @@ function(
 
         fsm.add_state('running', function() {
 			while (!timer.isFinished()) {
-				surfaceOneLayer(remixLayers, 'popOrFadeIn');
+                if (FAST_MODE) {
+                    surfaceOneLayer(remixLayers, 'popIn');
+                } else {
+                    surfaceOneLayer(remixLayers, 'popOrFadeIn');
+                }
 				surfaceOneLayer(midfieldLayers, 'fadeIn');
 				fx_queue.tick();
 				refresh();
