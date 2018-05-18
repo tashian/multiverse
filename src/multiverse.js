@@ -48,7 +48,7 @@ function(
             midfieldLayers = utils.getLayerSetByName(app.activeDocument, "midfield"),
             backgroundLayers = utils.getLayerSetByName(app.activeDocument, "background"),
             fsm = new Machine('init'),
-            timer = new PollingTimer(300);
+            timer = new PollingTimer(200);
 
         fsm.add_state('init', function() {
             fadeLayers(remixLayers);
