@@ -70,6 +70,12 @@ Some things that will affect the experience the most:
 * how many layers we attempt to operate on at a time (more layers in play -> script is slower, fewer -> script is faster)
 * how many steps of opacity to move through while fading in or out
 
+It's important to note that the slowest operations are refreshing the
+canvas (calling `refresh()`, which happens after every tick), and adjusting the
+opacity of a layer. So, you can play with how many simultaneous changes you make
+between refreshes to achieve your desired pace. You can also manually insert
+calls to `$.sleep()` if you want to slow the pace.
+
 ### assign\_layer\_names
 
 This script prompts you to choose any text file and will assign the names of
