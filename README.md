@@ -78,7 +78,8 @@ layers in the active document randomly, using lines from the file.
 This is useful if you use a lot of layers and want names that are less generic
 than "Layer 23."
 
-As an example, we've included a list of rose variatals in `roses.txt`.
+As an example, we've included a list of rose variatals in
+[roses.txt](https://github.com/tashian/multiverse/blob/master/roses.txt).
 
 ### random\_layer\_visibility
 
