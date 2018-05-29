@@ -31,16 +31,5 @@ function(
 
 	var x = new FxQueue();
 
-	// console.log(utils.ease(80, 90));
-	// console.log(utils.ease(20, 30));
-	// console.log(utils.ease(0, 0));
-	// console.log(utils.ease(3, 0));
-
-	console.log(x.width());
-	x.add(1, 'fadeOut', 50);
-	x.add(2, 'fadeOut', 50);
-	x.add(3, 'fadeOut', 50);
-	console.log(x.width());
-	console.log(x.size());
-
+    // Tests TBD
 });

@@ -18,7 +18,8 @@ function(
     Machine
 ) {
     var fx_queue = new FxQueue(),
-        FAST_MODE = true;
+        FAST_MODE = true,
+        MODE_SWITCH_FREQUENCY = 300;
 
     function surfaceOneLayer(layerSet, style) {
         var layer = sample(layerSet.layers);
@@ -48,7 +49,7 @@ function(
             midfieldLayers = utils.getLayerSetByName(app.activeDocument, "midfield"),
             backgroundLayers = utils.getLayerSetByName(app.activeDocument, "background"),
             fsm = new Machine('init'),
-            timer = new PollingTimer(200);
+            timer = new PollingTimer(MODE_SWITCH_FREQUENCY);
 
         fsm.add_state('init', function() {
             fadeLayers(remixLayers);
@@ -116,11 +117,6 @@ function(
             .where({allLocked: false, isBackgroundLayer: false})
             .sample()
             .value();
-    }
-
-    function candidateForShowing(layers) {
-        return _.findWhere(layers,
-            {visible: false, allLocked: false, isBackgroundLayer: false});
     }
 
     return forever();
