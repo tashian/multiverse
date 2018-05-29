@@ -2,7 +2,8 @@
 
 Multiverse is a collection of Photoshop scripts for making generative art, created
 by Carl Tashian and Petra Cortright for the 10th edition of Rhizome's
-[Seven on Seven](sevenonseven.art) event in NYC.
+[Seven on Seven](https://rhizome.org/sevenonseven/) event at the New Museum
+in NYC.
 
 ## Usage
 
@@ -121,5 +122,5 @@ Lint the scripts:
 
 ## Thank you
 
-Thank you to Rhizome for supporting the creation of this project.
+Thank you to [Rhizome](http://rhizome.org/) for supporting the creation of this project.
 
