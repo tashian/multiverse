@@ -1,6 +1,6 @@
-# multiverse: Generative art with Photoshop
+# multiverse: Generative art with Adobe Photoshop
 
-Multiverse is a collection of Photoshop scripts for making generative art, created
+Multiverse is a collection of Adobe Photoshop scripts for making generative art, created
 by Carl Tashian and Petra Cortright for the 10th edition of Rhizome's
 [Seven on Seven](https://rhizome.org/sevenonseven/) event at the New Museum
 in NYC.
@@ -35,7 +35,7 @@ floating to the top because they're too imposing
 `background` — these layers should cover the entire canvas and, importantly,
 these layers have no alpha. They could be mixed together, hidden or shown at
 various opacities around 100%. Be sure they're _not_ marked as background
-layers in Photoshop.
+layers.
 
 Locked and background layers will not be touched. The script will never move
 layers between layer sets, only to the top of the set they're in.
@@ -99,7 +99,7 @@ Randomly apply some motion blur to all layers.
 
 ### shuffle\_unlocked\_layers
 
-Like iTunes for your Photoshop, this shuffles all unlocked layers in the active
+Like iTunes for Adobe Photoshop, this shuffles all unlocked layers in the active
 document. This will not move layers outside of layer sets, but will shuffle
 layers within them.
 
@@ -125,4 +125,3 @@ Lint the scripts:
 
 Thank you to [Rhizome](http://rhizome.org/) for supporting the creation of this project,
 and for being a champion of digital art and culture.
-
