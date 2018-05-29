@@ -9,7 +9,7 @@ by Carl Tashian and Petra Cortright for the 10th edition of Rhizome's
 If you just want to use this project in Photoshop, simply download the
 contents of this repository. Then copy all the `*.jsx` files from the `build`
 directory into Photoshop's `Scripts` folder (under `Presets`) and restart
-Photoshop. The scripts will appear in Photoshop's `File &rarr; Scripts` menu
+Photoshop. The scripts will appear in Photoshop's File &rarr; Scripts menu
 
 The scripts that run forever can be cancelled by hitting `Esc`.
 
