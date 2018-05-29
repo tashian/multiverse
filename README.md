@@ -122,5 +122,6 @@ Lint the scripts:
 
 ## Thank you
 
-Thank you to [Rhizome](http://rhizome.org/) for supporting the creation of this project.
+Thank you to [Rhizome](http://rhizome.org/) for supporting the creation of this project,
+and for being a champion of digital art and culture.
 
