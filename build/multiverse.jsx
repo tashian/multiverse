@@ -3837,375 +3837,419 @@ define("requireLib", function(){});
 
 /*globals define,
           app */
-define('utils',["underscore"], function(_) {
-    return {
-        DEBUG: ($.level > 0),
-        //
-        // Randomness-related stuff
-        //
-        getRandomInt: function(min, max) {
-          min = Math.ceil(min);
-          max = Math.floor(max);
-          return Math.floor((Math.random() * (max - min)) + min);
-        },
+define('utils',['underscore'], function(_) {
+  return {
+    DEBUG: $.level > 0,
+    //
+    // Randomness-related stuff
+    //
+    getRandomInt: function(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    },
 
-        getRandomBool: function() {
-          return Boolean(Math.floor(Math.random() * 2));
-        },
+    getRandomBool: function() {
+      return Boolean(Math.floor(Math.random() * 2));
+    },
 
-        getNonUniformRandom: function(min, max) {
-            if (Math.random() < 0.25) {
-                return max;
-            } else if (Math.random() < 0.25) {
-                return this.getRandomInt(max*0.8, max);
+    getNonUniformRandom: function(min, max) {
+      if (Math.random() < 0.25) {
+        return max;
+      } else if (Math.random() < 0.25) {
+        return this.getRandomInt(max * 0.8, max);
+      }
+      return this.getRandomInt(min, max * 0.8);
+    },
+
+    //
+    // Easing functions
+    //
+    // Return steps from start to end
+    ease: function(start, end) {
+      var steps = parseInt(Math.max(start, end) / 10);
+      if (start == end || steps <= 1) {
+        return [];
+      }
+      var c = end - start;
+      return _.times(
+        steps,
+        function(step) {
+          if (start > end) {
+            return this.easeInQuad(step + 1, start, c, steps);
+          } else {
+            return this.easeOutQuad(step + 1, start, c, steps);
+          }
+        },
+        this,
+      );
+    },
+    // Steps toward a value, along a logistic curve.
+    // See https://www.desmos.com/calculator/21xlvhwkhf
+    sigmoid: function(start, end, steps) {
+      return _
+        .times(steps - 1, function(step) {
+          return (
+            (end - start) / (1 + Math.exp(-(step - steps / 2 + 1))) + start
+          );
+        })
+        .concat(end);
+    },
+    // See https://github.com/valera-rozuvan/JSTweener/blob/master/jstweener.js
+    // t: current time, b: begInnIng value, c: change In value, d: duration
+    easeInQuad: function(t, b, c, d) {
+      return c * (t /= d) * t + b;
+    },
+    easeOutQuad: function(t, b, c, d) {
+      return -c * (t /= d) * (t - 2) + b;
+    },
+
+    // Dig into the layer sets to get all of the art layers.
+    getAllArtLayers: function(doc) {
+      function collectAllLayers(doc, allLayers) {
+        for (var i = 0, max = doc.layers.length; i < max; i++) {
+          var layer = doc.layers[i];
+          if (layer.typename === 'ArtLayer') {
+            allLayers.push(layer);
+          } else {
+            // Layer set
+            collectAllLayers(layer, allLayers);
+          }
+        }
+        return allLayers;
+      }
+
+      return collectAllLayers(doc, []);
+    },
+
+    getLayerById: function(id, doc_id) {
+      try {
+        var doc;
+
+        if (doc_id == undefined) doc = activeDocument;
+        else
+          for (var i = 0; i < documents.length; i++) {
+            if (documents[i].id == doc_id) {
+              doc = documents[i];
+              break;
             }
-            return this.getRandomInt(min, max*0.8);
-        },
- 
-		//
-		// Easing functions
-		//
-		// Return steps from start to end
-		ease: function(start, end) {
-			var steps = parseInt(Math.max(start, end) / 10);
-			if (start == end || steps <= 1) { return []; }
-			var c = end - start;
-			return _.times(steps, function(step) {
-				if (start > end) {
-					return this.easeInQuad(step+1, start, c, steps);
-				} else {
-					return this.easeOutQuad(step+1, start, c, steps);
-				}
-			}, this);
-		},
-        // Steps toward a value, along a logistic curve.
-        // See https://www.desmos.com/calculator/21xlvhwkhf
-        sigmoid: function(start, end, steps) {
-            return _.times(steps-1, function(step) {
-                return ((end-start)/(1 + Math.exp(-(step-(steps/2)+1)))) + start;
-            }).concat(end);
-        },
-		// See https://github.com/valera-rozuvan/JSTweener/blob/master/jstweener.js
-		// t: current time, b: begInnIng value, c: change In value, d: duration
-		easeInQuad: function(t, b, c, d) {
-			return c*(t/=d)*t + b;
-		},
-		easeOutQuad: function(t, b, c, d) {
-			return -c *(t/=d)*(t-2) + b;
-		},
-        
-        // Dig into the layer sets to get all of the art layers.
-        getAllArtLayers: function(doc) {
-            function collectAllLayers (doc, allLayers) {
-                for (var i = 0, max = doc.layers.length; i < max; i++) {
-                    var layer = doc.layers[i];
-                    if (layer.typename === "ArtLayer") {
-                        allLayers.push(layer);
-                    } else {
-                        // Layer set
-                        collectAllLayers(layer, allLayers);
-                    }
-                }
-                return allLayers;
+          }
+
+        if (doc == undefined) {
+          alert('Bad document ' + doc_id);
+          return null;
+        }
+
+        var r = new ActionReference();
+        r.putProperty(charIDToTypeID('Prpr'), stringIDToTypeID('json'));
+
+        if (doc_id == undefined)
+          r.putEnumerated(
+            charIDToTypeID('Dcmn'),
+            charIDToTypeID('Ordn'),
+            charIDToTypeID('Trgt'),
+          );
+        else r.putIdentifier(charIDToTypeID('Dcmn'), doc_id);
+
+        eval(
+          'var json = ' +
+            executeActionGet(r).getString(stringIDToTypeID('json')),
+        );
+
+        if (json == undefined) return null;
+
+        var set = new Array();
+
+        function search_id(layers, id) {
+          for (var i = 0; i < layers.length; i++) {
+            if (layers[i].id == id) {
+              set.push(i);
+              return true;
             }
+          }
 
-            return collectAllLayers(doc, []);
-        },
-
-        getLayerById: function(id, doc_id) {
-            try {    
-                var doc;  
-          
-                if (doc_id == undefined) doc = activeDocument; 
-                else for (var i = 0; i < documents.length; i++)  {  
-                    if (documents[i].id == doc_id) {  
-                        doc = documents[i];  
-                        break;  
-                        }  
-                    }
-          
-                if (doc == undefined) { alert("Bad document " + doc_id); return null; }  
-          
-                var r = new ActionReference();      
-                r.putProperty(charIDToTypeID("Prpr"), stringIDToTypeID("json"));   
-          
-                if (doc_id == undefined) r.putEnumerated(charIDToTypeID("Dcmn"), charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));  
-                else                     r.putIdentifier(charIDToTypeID("Dcmn"), doc_id);  
-          
-                eval("var json = " + executeActionGet(r).getString(stringIDToTypeID("json")));    
-            
-                if (json == undefined) return null;    
-          
-                var set = new Array();  
-            
-                function search_id(layers, id)  {    
-                    for (var i = 0; i < layers.length; i++) {  
-                        if (layers[i].id == id) { set.push(i); return true; }  
-                    }  
-          
-                    for (var i = 0; i < layers.length; i++) {  
-                        if (layers[i].layers) {    
-                            if (search_id(layers[i].layers, id)) { set.push(i); return true; }   
-                        }  
-                    }  
-                }    
-          
-                if (search_id(json.layers, id)) {  
-                    var ret = doc.layers;  
-          
-                    for (var i = set.length-1; i > 0; i--) {  
-                        ret = ret[set[i]].layers;  
-                    }
-                      
-                    return ret[set[0]];  
-                }  
-              
-                return null;  
-            } catch (e) { alert(e); }    
-        },
-
-        // Changing a layer's name makes it visible, so we have to save & restore
-        // the visibility
-        setLayerName: function(layer, name) {
-            var visible = layer.visible;
-            layer.name = name;
-            layer.visible = visible;
-        },
-
-        // LayerSets.getByName displays an error if not found;
-        // this returns silently.
-        getLayerSetByName: function(doc, name) {
-          for (var x = 0, max = doc.layerSets.length; x < max; x++) {
-            if (doc.layerSets[x].name == name) {
-                return doc.layerSets[x];
+          for (var i = 0; i < layers.length; i++) {
+            if (layers[i].layers) {
+              if (search_id(layers[i].layers, id)) {
+                set.push(i);
+                return true;
+              }
             }
           }
         }
 
-    };
-});
+        if (search_id(json.layers, id)) {
+          var ret = doc.layers;
 
-/*globals define, $ */
-define('fx_queue',["underscore", "utils"], function(_, utils) {
-    // The FX queue is actually multiple queues operating simultaneously.
-    // There's a queue for each layer id.
-    //
-    // Each layer's queue is simply an array of functions that take a layer and
-    // operate on it directly.
-    // 
-    // During each tick, we call the next item in every non-empty queue.
-    // Some effects, like fade, add several steps when queued.
-    // The queue length is the total number of steps in all queues.
-    //
-    // The idea here is that you can orchestra several events happening
-    // within the document "concurrently."
-    //
-    // You can add effects to a layer's queue, clear the queue,
-    // and run a single tick of the handlers present in the queue.
+          for (var i = set.length - 1; i > 0; i--) {
+            ret = ret[set[i]].layers;
+          }
 
-    var MAX_Q_LENGTH = 500;
-
-    function FxQueue() {
-        this.queue = {};
-        this.isBusy = false;
-    }
-
-    var handlers = {
-        hide: function() {
-            return function(layer) {
-                layer.visible = false;
-            };
-        },
-
-        visible: function() {
-            return function(layer) {
-                layer.opacity = 0;
-                layer.visible = true;
-            };
-        },
-
-        show: function() {
-            return function(layer) {
-                layer.opacity = 100;
-                layer.visible = true;
-            };
-        },
-
-        popIn: function() {
-            return function(layer) {
-                if (Math.random() < 0.25) {
-                    layer.opacity = 100;
-                } else {
-                    layer.opacity = utils.getRandomInt(10, 100);
-                }
-            }
-        },
-
-        popOrFadeIn: function() {
-            var events = [];
-            if (Math.random() < 0.2) {
-                events.push(this.show());
-            } else {
-                events.push(this.visible());
-                events = events.concat(this.fadeToNonUniformRandomOpacity(0));
-            }
-            return events;
-        },
-
-        fadeIn: function() {
-            var events = [];
-            events.push(this.visible());
-            return events.concat(this.fadeToRandomOpacity(0));
-        },
-
-        fadeInCompletely: function() {
-            var events = [];
-            events.push(this.visible());
-            return events.concat(this.fade(0, 100));
-        },
-
-        moveBefore: function(layerSet) {
-            return function(layer) {
-                layer.move(layerSet.layers[0], ElementPlacement.PLACEBEFORE);
-            };
-        },
-
-        fade: function(fromOpacity, toOpacity) {
-            var faders = _.map(utils.ease(fromOpacity, toOpacity), function(val) {
-                return function(layer) {
-                    layer.opacity = val;
-                };
-            });
-            return _.toArray(faders);
-        },
-
-        fadeOut: function(fromOpacity) {
-            return this.fade(fromOpacity, 0);
-        },
-
-        fadeToRandomOpacity: function(fromOpacity) {
-            return this.fade(fromOpacity, utils.getRandomInt(10, 100));
-        },
-
-        fadeToNonUniformRandomOpacity: function(fromOpacity) {
-            return this.fade(fromOpacity, utils.getNonUniformRandom(10, 100));
+          return ret[set[0]];
         }
-    };
 
-    _.extend(FxQueue.prototype, {
-        handlers: handlers,
-        isQueued: function(layerId) {
-            if (layerId in this.queue) {
-                return !_.isEmpty(this.queue[layerId]);
-            }
-            return false;
-        },
-        add: function(layerId, ev) {
-            var args = _.toArray(arguments).slice(2),
-                funcs;
-            if (this.isBusy) { return; }
-            if (!(layerId in this.queue)) {
-                this.queue[layerId] = [];
-            }
+        return null;
+      } catch (e) {
+        alert(e);
+      }
+    },
 
-            funcs = this.handlers[ev].apply(this.handlers, args);
-            if (_.isArray(funcs)) {
-                _.each(funcs, function(func) {
-                    this.queue[layerId].unshift(func);
-                }, this);
-            } else {
-                this.queue[layerId].unshift(funcs);
-            }
-        },
-        clear: function() {
-            this.queue = {};
-            this.isBusy = false;
-        },
-        isEmpty: function() {
-            return (this.size() == 0);
-        },
-        size: function() {
-            return _.chain(this.queue)
-                    .values()
-                    .flatten()
-                    .size()
-                    .value();
-        },
-        width: function() {
-            return _.chain(this.queue)
-             .values()
-             .reject(_.isEmpty)
-             .size()
-             .value();
-        },
-        tick: function() {
-            var ev;
-            _.each(this.queue, function(steps, layerId) {
-                if (!_.isEmpty(steps)) {
-                    ev = steps.pop();
-                    ev(utils.getLayerById(layerId));
-                }
-            }, this);
-            this.isBusy = (this.size() > MAX_Q_LENGTH);
+    // Changing a layer's name makes it visible, so we have to save & restore
+    // the visibility
+    setLayerName: function(layer, name) {
+      var visible = layer.visible;
+      layer.name = name;
+      layer.visible = visible;
+    },
+
+    // LayerSets.getByName displays an error if not found;
+    // this returns silently.
+    getLayerSetByName: function(doc, name) {
+      for (var x = 0, max = doc.layerSets.length; x < max; x++) {
+        if (doc.layerSets[x].name == name) {
+          return doc.layerSets[x];
         }
-    });
-
-    return FxQueue;
+      }
+    },
+  };
 });
 
 /*globals define, $ */
-define('polling_timer',["underscore", "utils"], function(_, utils) {
-    var PollingTimer = function(duration) {
-        this.duration = duration * 1000;
-    };
+define('fx_queue',['underscore', 'utils'], function(_, utils) {
+  // The FX queue is actually multiple queues operating simultaneously.
+  // There's a queue for each layer id.
+  //
+  // Each layer's queue is simply an array of functions that take a layer and
+  // operate on it directly.
+  //
+  // During each tick, we call the next item in every non-empty queue.
+  // Some effects, like fade, add several steps when queued.
+  // The queue length is the total number of steps in all queues.
+  //
+  // The idea here is that you can orchestra several events happening
+  // within the document "concurrently."
+  //
+  // You can add effects to a layer's queue, clear the queue,
+  // and run a single tick of the handlers present in the queue.
 
-    _.extend(PollingTimer.prototype, {
-        // duration is in seconds
-        start: function() {
-            this.startTime = Date.now();
+  var MAX_Q_LENGTH = 500;
+
+  function FxQueue() {
+    this.queue = {};
+    this.isBusy = false;
+  }
+
+  var handlers = {
+    hide: function() {
+      return function(layer) {
+        layer.visible = false;
+      };
+    },
+
+    visible: function() {
+      return function(layer) {
+        layer.opacity = 0;
+        layer.visible = true;
+      };
+    },
+
+    show: function() {
+      return function(layer) {
+        layer.opacity = 100;
+        layer.visible = true;
+      };
+    },
+
+    popIn: function() {
+      return function(layer) {
+        if (Math.random() < 0.25) {
+          layer.opacity = 100;
+        } else {
+          layer.opacity = utils.getRandomInt(10, 100);
+        }
+      };
+    },
+
+    popOrFadeIn: function() {
+      var events = [];
+      if (Math.random() < 0.2) {
+        events.push(this.show());
+      } else {
+        events.push(this.visible());
+        events = events.concat(this.fadeToNonUniformRandomOpacity(0));
+      }
+      return events;
+    },
+
+    fadeIn: function() {
+      var events = [];
+      events.push(this.visible());
+      return events.concat(this.fadeToRandomOpacity(0));
+    },
+
+    fadeInCompletely: function() {
+      var events = [];
+      events.push(this.visible());
+      return events.concat(this.fade(0, 100));
+    },
+
+    moveBefore: function(layerSet) {
+      return function(layer) {
+        layer.move(layerSet.layers[0], ElementPlacement.PLACEBEFORE);
+      };
+    },
+
+    fade: function(fromOpacity, toOpacity) {
+      var faders = _.map(utils.ease(fromOpacity, toOpacity), function(val) {
+        return function(layer) {
+          layer.opacity = val;
+        };
+      });
+      return _.toArray(faders);
+    },
+
+    fadeOut: function(fromOpacity) {
+      return this.fade(fromOpacity, 0);
+    },
+
+    fadeToRandomOpacity: function(fromOpacity) {
+      return this.fade(fromOpacity, utils.getRandomInt(10, 100));
+    },
+
+    fadeToNonUniformRandomOpacity: function(fromOpacity) {
+      return this.fade(fromOpacity, utils.getNonUniformRandom(10, 100));
+    },
+  };
+
+  _.extend(FxQueue.prototype, {
+    handlers: handlers,
+    isQueued: function(layerId) {
+      if (layerId in this.queue) {
+        return !_.isEmpty(this.queue[layerId]);
+      }
+      return false;
+    },
+    add: function(layerId, ev) {
+      var args = _.toArray(arguments).slice(2),
+        funcs;
+      if (this.isBusy) {
+        return;
+      }
+      if (!(layerId in this.queue)) {
+        this.queue[layerId] = [];
+      }
+
+      funcs = this.handlers[ev].apply(this.handlers, args);
+      if (_.isArray(funcs)) {
+        _.each(
+          funcs,
+          function(func) {
+            this.queue[layerId].unshift(func);
+          },
+          this,
+        );
+      } else {
+        this.queue[layerId].unshift(funcs);
+      }
+    },
+    clear: function() {
+      this.queue = {};
+      this.isBusy = false;
+    },
+    isEmpty: function() {
+      return this.size() == 0;
+    },
+    size: function() {
+      return _
+        .chain(this.queue)
+        .values()
+        .flatten()
+        .size()
+        .value();
+    },
+    width: function() {
+      return _
+        .chain(this.queue)
+        .values()
+        .reject(_.isEmpty)
+        .size()
+        .value();
+    },
+    tick: function() {
+      var ev;
+      _.each(
+        this.queue,
+        function(steps, layerId) {
+          if (!_.isEmpty(steps)) {
+            ev = steps.pop();
+            ev(utils.getLayerById(layerId));
+          }
         },
-        isFinished: function() {
-            return (Date.now() > this.startTime + this.duration);
-        },
-    });
+        this,
+      );
+      this.isBusy = this.size() > MAX_Q_LENGTH;
+    },
+  });
 
-    PollingTimer.prototype.reset = PollingTimer.prototype.start;
-
-    return PollingTimer;
+  return FxQueue;
 });
 
 /*globals define, $ */
-define('machine',["underscore", "utils"], function(_, utils) {
-    // A super simple finite state machine.
+define('polling_timer',['underscore', 'utils'], function(_, utils) {
+  var PollingTimer = function(duration) {
+    this.duration = duration * 1000;
+  };
 
-    function Machine(initial_state) {
-        this.states = {};
-        this.transitions = {};
-        this.state = initial_state;
-    }
+  _.extend(PollingTimer.prototype, {
+    // duration is in seconds
+    start: function() {
+      this.startTime = Date.now();
+    },
+    isFinished: function() {
+      return Date.now() > this.startTime + this.duration;
+    },
+  });
 
-    _.extend(Machine.prototype, {
-        tick: function() {
-            var nextState = this.transitions[this.state][0],
-                guard     = this.transitions[this.state][1];
-            this.states[this.state]();
-            if (guard()) {
-                if (utils.DEBUG) $.writeln("Change state from ", this.state, " to ", nextState);
-                this.state = nextState;
-            }
-        },
-        add_transition: function(from, to, guard) {
-            if (from in this.states) {
-                this.transitions[from] = [to, guard];
-            }
-        },
-        add_state: function(name, handler) {
-            this.states[name] = handler;
-        },
-        always: function() { return true; }
-    });
+  PollingTimer.prototype.reset = PollingTimer.prototype.start;
 
-    return Machine;
+  return PollingTimer;
+});
+
+/*globals define, $ */
+define('machine',['underscore', 'utils'], function(_, utils) {
+  // A super simple finite state machine.
+
+  function Machine(initial_state) {
+    this.states = {};
+    this.transitions = {};
+    this.state = initial_state;
+  }
+
+  _.extend(Machine.prototype, {
+    tick: function() {
+      var nextState = this.transitions[this.state][0],
+        guard = this.transitions[this.state][1];
+      this.states[this.state]();
+      if (guard()) {
+        if (utils.DEBUG)
+          $.writeln('Change state from ', this.state, ' to ', nextState);
+        this.state = nextState;
+      }
+    },
+    add_transition: function(from, to, guard) {
+      if (from in this.states) {
+        this.transitions[from] = [to, guard];
+      }
+    },
+    add_state: function(name, handler) {
+      this.states[name] = handler;
+    },
+    always: function() {
+      return true;
+    },
+  });
+
+  return Machine;
 });
 
 /*global require,
@@ -4214,122 +4258,122 @@ define('machine',["underscore", "utils"], function(_, utils) {
 	File
 */
 require([
-    "underscore",
-    "utils",
-    "fx_queue",
-    "polling_timer",
-    "machine"
-],
-function(
-    _,
-    utils,
-    FxQueue,
-    PollingTimer,
-    Machine
-) {
-    var fx_queue = new FxQueue(),
-        FAST_MODE = true,
-        MODE_SWITCH_FREQUENCY = 300;
+  'underscore',
+  'utils',
+  'fx_queue',
+  'polling_timer',
+  'machine',
+], function(_, utils, FxQueue, PollingTimer, Machine) {
+  var fx_queue = new FxQueue(),
+    FAST_MODE = true,
+    MODE_SWITCH_FREQUENCY = 300;
 
-    function surfaceOneLayer(layerSet, style) {
-        var layer = sample(layerSet.layers);
-        if (layer) {
-            if (utils.DEBUG) $.writeln("Surfacing ", layerSet.name, " layer ", layer.id);
-            if (layer.visible) {
-                fx_queue.add(layer.id, 'fadeOut', layer.opacity);
-                fx_queue.add(layer.id, 'moveBefore', layerSet);
-            }
-            fx_queue.add(layer.id, style);
+  function surfaceOneLayer(layerSet, style) {
+    var layer = sample(layerSet.layers);
+    if (layer) {
+      if (utils.DEBUG)
+        $.writeln('Surfacing ', layerSet.name, ' layer ', layer.id);
+      if (layer.visible) {
+        fx_queue.add(layer.id, 'fadeOut', layer.opacity);
+        fx_queue.add(layer.id, 'moveBefore', layerSet);
+      }
+      fx_queue.add(layer.id, style);
+    }
+  }
+
+  function fadeLayers(layerSet) {
+    var n;
+    _.chain(layerSet.layers)
+      .where({allLocked: false, isBackgroundLayer: false, visible: true})
+      .tap(function(layers) {
+        n = layers.length * 0.8;
+      })
+      .sample(n)
+      .each(function(layer) {
+        fx_queue.add(layer.id, 'fadeOut', layer.opacity);
+      });
+  }
+
+  function forever() {
+    var remixLayers = utils.getLayerSetByName(app.activeDocument, 'remix'),
+      midfieldLayers = utils.getLayerSetByName(app.activeDocument, 'midfield'),
+      backgroundLayers = utils.getLayerSetByName(
+        app.activeDocument,
+        'background',
+      ),
+      fsm = new Machine('init'),
+      timer = new PollingTimer(MODE_SWITCH_FREQUENCY);
+
+    fsm.add_state('init', function() {
+      fadeLayers(remixLayers);
+      fadeLayers(midfieldLayers);
+      while (!fx_queue.isEmpty()) {
+        fx_queue.tick();
+        refresh();
+      }
+    });
+
+    fsm.add_state('reset', function() {
+      timer.reset();
+    });
+
+    fsm.add_state('running', function() {
+      while (!timer.isFinished()) {
+        if (FAST_MODE) {
+          surfaceOneLayer(remixLayers, 'popIn');
+        } else {
+          surfaceOneLayer(remixLayers, 'popOrFadeIn');
         }
+        surfaceOneLayer(midfieldLayers, 'fadeIn');
+        fx_queue.tick();
+        refresh();
+      }
+    });
+
+    fsm.add_state('scene_change', function() {
+      fx_queue.clear();
+    });
+
+    fsm.add_state('hide_top_layers', function() {
+      fadeLayers(remixLayers);
+      fadeLayers(midfieldLayers);
+      while (!fx_queue.isEmpty()) {
+        fx_queue.tick();
+        refresh();
+      }
+    });
+
+    fsm.add_state('finish', function() {
+      surfaceOneLayer(backgroundLayers, 'fadeInCompletely');
+      while (!fx_queue.isEmpty()) {
+        fx_queue.tick();
+        refresh();
+      }
+    });
+
+    fsm.add_transition('init', 'reset', fsm.always);
+    fsm.add_transition('reset', 'running', fsm.always);
+    fsm.add_transition('running', 'scene_change', fsm.always);
+    fsm.add_transition('scene_change', 'hide_top_layers', fsm.always);
+    fsm.add_transition('hide_top_layers', 'finish', fsm.always);
+    fsm.add_transition('finish', 'reset', fsm.always);
+
+    // main loop
+    while (1) {
+      fsm.tick();
     }
+  }
 
-    function fadeLayers(layerSet) {
-        var n;
-        _.chain(layerSet.layers)
-         .where({allLocked: false, isBackgroundLayer: false, visible: true})
-         .tap(function(layers) { n = layers.length * 0.8; })
-         .sample(n)
-         .each(function(layer) {
-            fx_queue.add(layer.id, 'fadeOut', layer.opacity);
-         });
-    }
-    
-    function forever() {
-        var remixLayers = utils.getLayerSetByName(app.activeDocument, "remix"),
-            midfieldLayers = utils.getLayerSetByName(app.activeDocument, "midfield"),
-            backgroundLayers = utils.getLayerSetByName(app.activeDocument, "background"),
-            fsm = new Machine('init'),
-            timer = new PollingTimer(MODE_SWITCH_FREQUENCY);
+  function sample(layers) {
+    return _
+      .chain(layers)
+      .rest(Math.floor((layers.length - 1) * 0.6))
+      .where({allLocked: false, isBackgroundLayer: false})
+      .sample()
+      .value();
+  }
 
-        fsm.add_state('init', function() {
-            fadeLayers(remixLayers);
-            fadeLayers(midfieldLayers);
-   			while (!fx_queue.isEmpty()) {
-				fx_queue.tick();
-				refresh();
-			}
-        });
-
-		fsm.add_state('reset', function() {
-            timer.reset();
-		});
-
-        fsm.add_state('running', function() {
-			while (!timer.isFinished()) {
-                if (FAST_MODE) {
-                    surfaceOneLayer(remixLayers, 'popIn');
-                } else {
-                    surfaceOneLayer(remixLayers, 'popOrFadeIn');
-                }
-				surfaceOneLayer(midfieldLayers, 'fadeIn');
-				fx_queue.tick();
-				refresh();
-			}
-        });
-
-        fsm.add_state('scene_change', function() {
-            fx_queue.clear();
-        });
-
-        fsm.add_state('hide_top_layers', function() {
-            fadeLayers(remixLayers);
-            fadeLayers(midfieldLayers);
-   			while (!fx_queue.isEmpty()) {
-				fx_queue.tick();
-				refresh();
-			}
-		});
-
-        fsm.add_state('finish', function() {
-            surfaceOneLayer(backgroundLayers, 'fadeInCompletely');
-			while (!fx_queue.isEmpty()) {
-				fx_queue.tick();
-				refresh();
-			}
-        });
-
-        fsm.add_transition('init', 'reset', fsm.always);
-        fsm.add_transition('reset', 'running', fsm.always);
-        fsm.add_transition('running', 'scene_change', fsm.always);
-        fsm.add_transition('scene_change', 'hide_top_layers', fsm.always);
-        fsm.add_transition('hide_top_layers', 'finish', fsm.always);
-        fsm.add_transition('finish',  'reset', fsm.always);
-
-        // main loop
-        while (1) {
-            fsm.tick();
-        }
-    }
-
-    function sample(layers) {
-        return _.chain(layers)
-            .rest(Math.floor((layers.length-1) * 0.6))
-            .where({allLocked: false, isBackgroundLayer: false})
-            .sample()
-            .value();
-    }
-
-    return forever();
+  return forever();
 });
 
 define("multiverse", function(){});

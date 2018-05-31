@@ -1,7 +1,7 @@
 # multiverse: Generative art with Adobe Photoshop
 
-Multiverse is a collection of Adobe Photoshop scripts for making generative art, created
-by Carl Tashian and Petra Cortright for the 10th edition of Rhizome's
+Multiverse is a collection of Adobe Photoshop scripts for making generative art,
+created by Carl Tashian and Petra Cortright for the 10th edition of Rhizome's
 [Seven on Seven](https://rhizome.org/sevenonseven/) event at the New Museum
 in NYC.
 
