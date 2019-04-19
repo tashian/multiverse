@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script builds the JSX plugins
 
 src=src
 out=build
