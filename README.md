@@ -105,7 +105,7 @@ Randomly apply some motion blur to all layers.
 
 ### shuffle\_unlocked\_layers
 
-Like iTunes for Adobe Photoshop, this shuffles all unlocked layers in the active
+Like Spotify for a Photoshop document, this shuffles all unlocked layers in the active
 document. This will not move layers outside of layer sets, but will shuffle
 layers within them.
 
