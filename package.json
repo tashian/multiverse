@@ -9,7 +9,7 @@
     "chai": "^4.2.0",
     "jshint": "^2.10.2",
     "requirejs": "^2.3.6",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   },
   "scripts": {
     "test": "node test.js",
