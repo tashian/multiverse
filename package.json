@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "chai": "^4.2.0",
-    "jshint": "^2.10.2",
+    "jshint": "^2.13.6",
     "requirejs": "^2.3.6",
     "underscore": "^1.12.1"
   },
